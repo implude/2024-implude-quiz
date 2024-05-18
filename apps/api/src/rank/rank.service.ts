@@ -2,8 +2,6 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { RankEntityList, rank_entity } from "./entity/rank.entity";
-import { the_last } from "./type/rank.type";
-import { _return } from "./type/rank.type";
 @Injectable()
 export class RankService {
   private readonly logger = new Logger(RankService.name);
@@ -14,33 +12,22 @@ export class RankService {
     private readonly designRankModel: Model<rank_entity>
   ) {}
 
-  private make_new_array(rank_list: _return): the_last {
-    let res: the_last = [];
-    for (let i of rank_list) {
-      console.log(i);
-      res.push({
-        id: i.id,
-        name: i.name,
-        score: Math.round((i.score * (300 - i.sec)) / 100),
-        same_name: i.same_name,
-        sec: i.sec,
-      });
-    }
-
-    return res;
-  }
-  async find_dev(): Promise<the_last> {
+  async find_dev(): Promise<any[]> {
     this.logger.log("[GET] dev_Rank");
-    return await this.make_new_array(
-      await await this.devRankModel.find().sort({ score: -1 }).exec()
-    );
+    return await this.devRankModel
+      .find()
+      .sort({ score: -1, sec: 1 })
+      .limit(20)
+      .exec();
   }
 
-  async find_design(): Promise<the_last> {
+  async find_design(): Promise<any[]> {
     this.logger.log("[GET] design_Rank");
-    return await this.make_new_array(
-      await this.designRankModel.find().sort({ score: -1 }).exec()
-    );
+    return await this.designRankModel
+      .find()
+      .sort({ score: -1, sec: 1 })
+      .limit(20)
+      .exec();
   }
 
   private async getCountOfNames(

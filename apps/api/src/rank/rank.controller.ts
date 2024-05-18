@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Response } from "@nestjs/common";
 import { RankService } from "./rank.service";
 import { rankDTO } from "./dto/rank.dto";
 import Express from "express";
-import { the_last } from "./type/rank.type";
 
 @Controller()
 export class RankController {
@@ -10,13 +9,10 @@ export class RankController {
 
   @Get("/get_dev")
   async findindev(@Response() response: Express.Response): Promise<any> {
-    let data: the_last = await this.rankService.find_dev();
-    data = data.sort((a, b) => b.score - a.score);
-    console.log(data);
     return response
       .status(200)
       .setHeader("Access-Control-Allow-Origin", "*")
-      .json({ success: true, data: data });
+      .json({ success: true, data: await this.rankService.find_dev() });
   }
 
   @Post("/post_dev")
@@ -38,12 +34,10 @@ export class RankController {
 
   @Get("/get_design")
   async findindesign(@Response() response: Express.Response): Promise<any> {
-    let data: the_last = await this.rankService.find_design();
-    data = data.sort((a, b) => b.score - a.score);
     return response
       .status(200)
       .setHeader("Access-Control-Allow-Origin", "*")
-      .json({ success: true, data: data });
+      .json({ success: true, data: await this.rankService.find_design() });
   }
 
   @Post("/post_design")
