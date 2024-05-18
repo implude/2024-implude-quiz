@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { styled } from "styled-components";
-import { useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { DataDevelop } from "../Data-Develop";
 import { DataDesign } from "../Data-Design";
 import { ChevronDown } from "lucide-react";
 
 export default function RankPage() {
+  const navigate = useNavigate();
   const [fetchDevData, setFetchDevData] = useState([]);
   const [fetchDesignData, setFetchDesignData] = useState([]);
   const [searchParams] = useSearchParams();
@@ -35,6 +36,12 @@ export default function RankPage() {
     });
   }, []);
 
+  function getSolveTime(sec) {
+    let min = Math.floor(sec / 60);
+    let realSec = sec % 60;
+    return `${min < 10 ? "0" + min : min} : ${realSec < 10 ? "0" + realSec : realSec}`;
+  }
+
   return (
     <>
       <Wrap>
@@ -52,6 +59,13 @@ export default function RankPage() {
             <Blue>{searchParams.get("score")}</Blue>점 획득하셨습니다!
           </Greet>
         ) : null}
+        <GoHome
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          다시 홈으로
+        </GoHome>
         <TableCon>
           <div>
             <Title>개발 퀴즈 랭킹</Title>
@@ -61,11 +75,12 @@ export default function RankPage() {
                   <td>순위</td>
                   <td>이름</td>
                   <td>점수</td>
+                  <td>풀이 시간</td>
                 </tr>
               </thead>
               <tbody>
                 {fetchDevData[0] ? (
-                  fetchDevData.map(({ id, name, score, same_name }, i) => (
+                  fetchDevData.map(({ id, name, score, same_name, sec }, i) => (
                     <tr key={id}>
                       <td className={i < 3 ? "top" : null}>{i + 1}</td>
                       <td>
@@ -75,11 +90,12 @@ export default function RankPage() {
                           : "(" + (Number(same_name) + 1) + ")"}
                       </td>
                       <td>{score}점</td>
+                      <td>{getSolveTime(sec)}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="3">아직 랭킹에 등록된 사용자가 없습니다.</td>
+                    <td colSpan="4">아직 랭킹에 등록된 사용자가 없습니다.</td>
                   </tr>
                 )}
               </tbody>
@@ -93,25 +109,29 @@ export default function RankPage() {
                   <td>순위</td>
                   <td>이름</td>
                   <td>점수</td>
+                  <td>풀이 시간</td>
                 </tr>
               </thead>
               <tbody>
                 {fetchDesignData[0] ? (
-                  fetchDesignData.map(({ id, name, score, same_name }, i) => (
-                    <tr key={id}>
-                      <td className={i < 3 ? "top" : null}>{i + 1}</td>
-                      <td>
-                        {name}{" "}
-                        {same_name == "0"
-                          ? null
-                          : "(" + (Number(same_name) + 1) + ")"}
-                      </td>
-                      <td>{score}점</td>
-                    </tr>
-                  ))
+                  fetchDesignData.map(
+                    ({ id, name, score, same_name, sec }, i) => (
+                      <tr key={id}>
+                        <td className={i < 3 ? "top" : null}>{i + 1}</td>
+                        <td>
+                          {name}{" "}
+                          {same_name == "0"
+                            ? null
+                            : "(" + (Number(same_name) + 1) + ")"}
+                        </td>
+                        <td>{score}점</td>
+                        <td>{getSolveTime(sec)}</td>
+                      </tr>
+                    )
+                  )
                 ) : (
                   <tr>
-                    <td colSpan="3">아직 랭킹에 등록된 사용자가 없습니다.</td>
+                    <td colSpan="4">아직 랭킹에 등록된 사용자가 없습니다.</td>
                   </tr>
                 )}
               </tbody>
@@ -228,4 +248,19 @@ const VideoAlert = styled.div`
   align-items: center;
   gap: 0.2rem;
   font-weight: 700;
+`;
+
+const GoHome = styled.button`
+  padding: 0.5rem 1rem;
+  background: #fff;
+  outline: none;
+  border: 1px solid #eaeaea;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  &:hover {
+    border: 1px solid #0076ff;
+    background: #e2eefe;
+  }
 `;

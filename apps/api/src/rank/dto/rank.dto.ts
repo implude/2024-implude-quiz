@@ -5,4 +5,6 @@ export class rankDTO {
   name: string;
   @IsNumber()
   score: number;
+  @IsNumber()
+  sec: number;
 }

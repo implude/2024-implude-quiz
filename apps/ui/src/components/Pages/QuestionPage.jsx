@@ -90,6 +90,12 @@ export default function Quiz() {
     progressBarFunc();
   }, [level]);
 
+  useEffect(() => {
+    if (solveTime >= 600) {
+      navigate("/");
+    }
+  }, [solveTime]);
+
   const ProgressBlock = styled.div`
     // QuestionData.length를 받아와야 해서 여기에 둠
     width: ${`calc(100% / ${QuestionData.length - 1})`};
@@ -184,6 +190,7 @@ export default function Quiz() {
                         // /post_dev 혹은 /post_design으로 요청
                         name: searchParams.get("name"),
                         score: point,
+                        sec: solveTime,
                       }
                     )
                     .then((_response) => {
