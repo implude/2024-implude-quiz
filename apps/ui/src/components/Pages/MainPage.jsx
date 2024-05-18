@@ -6,7 +6,6 @@ export default function MainPage() {
   const navigate = useNavigate();
   const [type, setType] = useState("");
   const [name, setName] = useState("");
-
   return (
     <Wrap>
       <MainCon>
@@ -35,14 +34,18 @@ export default function MainPage() {
               placeholder="플레이어 이름 입력"
               onInput={(e) => setName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key == "Enter")
+                if (e.key == "Enter") {
+                  if (name === "") return;
                   navigate(`/question?type=${type}&name=${name}`);
+                }
               }}
             />
           ) : null}
           {(type == "dev" || type == "design") && name ? (
             <Start
-              onClick={() => navigate(`/question?type=${type}&name=${name}`)}
+              onClick={() => {
+                navigate(`/question?type=${type}&name=${name}`);
+              }}
             >
               도전!
             </Start>

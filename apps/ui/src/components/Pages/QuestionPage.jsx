@@ -21,11 +21,11 @@ export default function Quiz() {
   const [inputValue, setInputValue] = useState("");
   const [progressbarArr, setProgressbarArr] = useState([]);
   const [isModal, setModal] = useState(false);
-  const QuestionData =
-    getQuizType() == "dev" ? [...DataDevelop] : [...DataDesign];
+  const QuestionData = getQuizType() == "dev" ? DataDevelop : DataDesign;
   const QuestionMaxNum = QuestionData.length - 1; // level이 이 숫자보다 커지면 테스트 종료
   const [searchParams, setSearchParams] = useSearchParams();
   const [isRight, setRight] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const audio = useRef();
 
@@ -38,7 +38,9 @@ export default function Quiz() {
   function getSolveTime(sec) {
     let min = Math.floor(sec / 60);
     let realSec = sec % 60;
-    return `${min < 10 ? "0" + min : min} : ${realSec < 10 ? "0" + realSec : realSec}`;
+    return `${min < 10 ? "0" + min : min} : ${
+      realSec < 10 ? "0" + realSec : realSec
+    }`;
   }
 
   function getQuizType() {
@@ -64,15 +66,17 @@ export default function Quiz() {
   const onSubmit = () => {
     setModal(true);
     // 주관식 답 제출했을 때
-    if (inputValue != "") {
-      let copy = [...choice, inputValue]; // 맨 마지막에 답안 추가
+    if (inputValue === "") {
+      let copy = [...choice, "2h389ddjhf"];
       setChoice(copy);
-      if (inputValue === QuestionData[level].Ans) {
-        setPoint((prev) => prev + QuestionData[level].Point);
-        setRight(true);
-      } else {
-        setRight(false);
-      }
+    }
+    let copy = [...choice, inputValue]; // 맨 마지막에 답안 추가
+    setChoice(copy);
+    if (inputValue === QuestionData[level].Ans) {
+      setPoint((prev) => prev + QuestionData[level].Point);
+      setRight(true);
+    } else {
+      setRight(false);
     }
   };
 
@@ -177,8 +181,11 @@ export default function Quiz() {
             />
             <button
               onClick={() => {
+                if (loading === true) return;
                 console.log(level, QuestionMaxNum);
+                console.log("ㅇㅇㅇㅇㅇㅇㅇㅇㅇ");
                 if (level >= QuestionMaxNum) {
+                  setLoading(true);
                   console.log(getQuizType());
                   // const userScore = isRight
                   //   ? point + QuestionData[level].Point
@@ -195,7 +202,9 @@ export default function Quiz() {
                     )
                     .then((_response) => {
                       navigate(
-                        `/result?name=${searchParams.get("name")}&score=${point}&type=${getQuizType()}`
+                        `/result?name=${searchParams.get(
+                          "name"
+                        )}&score=${point}&type=${getQuizType()}`
                       );
                       location.reload(true);
                     });
@@ -207,7 +216,7 @@ export default function Quiz() {
                 }
               }}
             >
-              다음 문제
+              {loading ? "로딩 중..." : "다음 문제"}
             </button>
           </ModalCon>
         ) : null}
